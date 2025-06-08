@@ -1,0 +1,85 @@
+# Python / FastAPI specific
+backend/venv/
+backend/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Node.js / Next.js specific
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.DS_Store
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.pnp
+frontend/.pnp.js
+
+# Environment files
+.env
+.env.*
+!/.env.example
+!/.env.sample
+
+backend/.env
+backend/.env.*
+!backend/.env.example
+!backend/.env.sample
+
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+!frontend/.env.example
+!frontend/.env.sample
+
+# IDE / Editor specific
+.vscode/
+.idea/
+*.project
+*.classpath
+*.cproject
+*.launch
+*.settings
+*.sublime-workspace
+*.sublime-project
+
+# OS specific
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Log files
+*.log
+logs/
+
+# Coverage reports
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+.pytest_cache/
+
+# Other build artifacts
+*.tar.gz
+*.zip

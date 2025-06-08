@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+:root {
+  /* Light Mode (Default) */
+  --background: #f8f5f2; /* Creamy off-white */
+  --foreground: #333333; /* Dark gray for text */
+  --primary: #7a0019;    /* Deep, rich burgundy */
+  --secondary: #b2a18d;  /* Muted gold/tan */
+  --accent: #5c3a21;     /* Dark brown for subtle accents */
+  --card-background: #ffffff; /* White for cards */
+  --border-color: #e0e0e0; /* Light gray for borders */
+
+  /* Font variables */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1a1a1a; /* Very dark gray */
+    --foreground: #e0e0e0; /* Light gray for text */
+    --primary: #d4b28c;    /* Lighter, elegant gold/bronze */
+    --secondary: #5a5a5a;  /* Mid-dark gray */
+    --accent: #8f7862;     /* Muted light brown/tan */
+    --card-background: #2c2c2c; /* Darker card background */
+    --border-color: #444444; /* Darker border color */
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Example of using serif for headings if desired */
+/* h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+} */
