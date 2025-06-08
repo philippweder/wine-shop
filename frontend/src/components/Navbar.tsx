@@ -8,11 +8,11 @@ const Navbar = () => {
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/', label: 'Home', icon: Home },
-    { href: '/browse-wines', label: 'Browse Wines', icon: Wine },
+    { href: '/', label: '', icon: Home },
+    { href: '/browse-wines', label: 'Wines', icon: Wine },
     { href: '/ai-sommelier', label: 'AI Sommelier', icon: Bot },
-    { href: '/cart', label: 'Cart', icon: ShoppingCart },
-    { href: '/account', label: 'Account', icon: UserCircle },
+    { href: '/cart', label: '', icon: ShoppingCart },
+    { href: '/account', label: '', icon: UserCircle },
   ];
 
   return (
