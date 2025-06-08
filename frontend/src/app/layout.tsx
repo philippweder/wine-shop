@@ -38,7 +38,7 @@ export default function RootLayout({
       className={`${inter.variable} ${playfairDisplay.variable}`}
     >
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
         <Navbar /> {/* Add the Navbar component here */}
         <main className="pt-16"> {/* Add padding to main to offset fixed Navbar */}

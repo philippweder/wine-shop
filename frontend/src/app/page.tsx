@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import Link from "next/link";
 
 export default function LandingPage() {
@@ -12,8 +11,6 @@ export default function LandingPage() {
           Experience a new era of wine appreciation, curated for the modern connoisseur.
         </p>
       </header>
-
-      <Navbar />
 
       <section className="w-full max-w-4xl mt-12 text-center">
         <h2 className="text-3xl font-semibold font-serif text-accent mb-6">

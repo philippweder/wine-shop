@@ -11,7 +11,7 @@ export default function WineCard({ wine }: WineCardProps) {
   return (
     <div
       key={wine.id}
-      className="group rounded-xl border border-border-color bg-card-background shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl hover:border-primary/50 flex flex-col"
+      className="group rounded-xl border border-border-color bg-card shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl hover:border-primary/50 flex flex-col"
     >
       {wine.image_url ? (
         <div className="w-full h-64 bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
@@ -51,7 +51,7 @@ export default function WineCard({ wine }: WineCardProps) {
         </p>
 
         <button
-          className="mt-2 w-full py-2 px-4 bg-primary/10 text-primary border border-primary/30 rounded-lg text-xs font-sans transition-colors hover:bg-primary/20 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-card-background"
+          className="mt-2 w-full py-2 px-4 bg-primary/10 text-primary border border-primary/30 rounded-lg text-xs font-sans transition-colors hover:bg-primary/20 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-card"
           onClick={() => console.log(`Chat about ${wine.name}`)}
         >
           Discuss this Wine
