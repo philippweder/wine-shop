@@ -15,8 +15,8 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="w-full max-w-6xl mb-8 bg-card-background shadow-md rounded-lg">
-      <ul className="flex items-center justify-around p-4">
+    <nav className="fixed top-0 left-0 right-0 z-50 w-full bg-card-background shadow-md">
+      <ul className="flex items-center justify-around max-w-6xl mx-auto p-4">
         {navItems.map((item) => (
           <li key={item.href}>
             <Link

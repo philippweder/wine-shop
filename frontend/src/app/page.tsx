@@ -31,7 +31,7 @@ export default function LandingPage() {
       </section>
 
       <section className="w-full max-w-4xl mt-16">
-        <h3 className="text-2xl font-semibold font-serif text-accent mb-4 text-center">Why Choose The Yuppie Cellar?</h3>
+        <h3 className="text-2xl font-semibold font-serif text-accent mb-4 text-center">Why Choose Sentio?</h3>
         <div className="grid md:grid-cols-3 gap-8 text-center">
           <div className="bg-card p-6 rounded-lg shadow">
             <h4 className="text-xl font-bold text-card-foreground mb-2">Curated Selection</h4>
@@ -50,7 +50,7 @@ export default function LandingPage() {
 
       <footer className="w-full max-w-6xl mt-16 pt-8 border-t border-border-color text-center">
         <p className="text-sm text-secondary">
-          &copy; {new Date().getFullYear()} The Yuppie Cellar. All rights reserved.
+          &copy; {new Date().getFullYear()} Sentio. All rights reserved.
         </p>
       </footer>
     </main>
