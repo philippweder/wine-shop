@@ -1,3 +1,13 @@
 requests
 beautifulsoup4
 selenium
+webdriver-manager
+langchain
+openai
+faiss-cpu==1.8.0
+sentence-transformers
+tiktoken
+python-dotenv
+numpy~=1.26.0 # Pin NumPy to < 2.0 for compatibility
+langchain-huggingface # For the updated HuggingFaceEmbeddings
+langchain-openai # For ChatOpenAI
