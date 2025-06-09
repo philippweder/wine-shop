@@ -14,7 +14,7 @@ export default function LandingPage() {
 
       <section className="w-full max-w-4xl mt-12 text-center">
         <h2 className="text-3xl font-semibold font-serif text-accent mb-6">
-          Going on a Date? Heading over to your in-laws for dinner?
+          Going on a Date?
         </h2>
         <p className="text-lg text-secondary-foreground mb-4">
           Find the perfect wine for any occasion with our AI-powered sommelier. Whether you're impressing a date or bringing a gift to your in-laws, we have the ideal selection for you.
