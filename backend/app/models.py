@@ -7,11 +7,19 @@ class Wine(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     type = Column(String) # e.g., Red, White, Rosé, Sparkling, Dessert
-    varietal = Column(String) # e.g., Cabernet Sauvignon, Chardonnay, Pinot Noir
+    varietal = Column(String, nullable=True) # Made nullable as some entries might miss it
     vintage = Column(Integer, nullable=True)
     region = Column(String, nullable=True)
     country = Column(String, nullable=True)
     price = Column(Float)
     description = Column(Text, nullable=True)
     image_url = Column(String, nullable=True)
-    # Add more fields as needed, e.g., alcohol_content, producer, tasting_notes, stock_quantity
+    producer = Column(String, nullable=True) # New field
+    sub_region = Column(String, nullable=True) # New field
+    food_pairing = Column(Text, nullable=True) # New field
+    drinking_window = Column(String, nullable=True) # New field
+    body_type = Column(String, nullable=True) # New field
+    product_url = Column(String, nullable=True) # New field
+    size = Column(String, nullable=True) # New field
+    source = Column(String, nullable=True) # New field to store "martel.ch"
+    # Add more fields as needed, e.g., alcohol_content, tasting_notes, stock_quantity

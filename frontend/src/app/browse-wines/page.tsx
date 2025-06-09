@@ -68,14 +68,18 @@ const BrowseWinesPage: React.FC = () => {
       setFilteredWines(allWines);
     } else {
       setFilteredWines(
-        allWines.filter((wine) => wine.type.toLowerCase() === selectedType.toLowerCase())
+        allWines.filter(wine => typeof wine.type === 'string' && wine.type.toLowerCase() === selectedType.toLowerCase())
       );
     }
   };
 
   const wineTypes = useMemo(() => {
-    const types = new Set(allWines.map((wine) => wine.type));
-    return Array.from(types);
+    const types = new Set(
+      allWines
+        .map((wine) => wine.type)
+        .filter((type): type is string => typeof type === 'string' && type.trim() !== '') // Ensure type is a non-empty string
+    );
+    return ["", ...Array.from(types)]; // Add "" for "All Types" option, ensure it's always string
   }, [allWines]);
 
   let winesToDisplay: Wine[] = [];
@@ -126,16 +130,21 @@ const BrowseWinesPage: React.FC = () => {
 
       <div className="mb-8 flex justify-center">
         <select
-          value={typeFilter}
+          value={typeFilter} // typeFilter is a string, so this is fine
           onChange={handleFilterChange}
           className="p-2 border border-secondary rounded-md shadow-sm focus:ring-primary focus:border-primary bg-card-background text-foreground"
         >
-          <option value="">All Types</option>
-          {wineTypes.map((type) => (
-            <option key={type} value={type}>
-              {type.charAt(0).toUpperCase() + type.slice(1)}
-            </option>
-          ))}
+          {/* <option value="">All Types</option> // Removed as wineTypes now includes it */}
+          {wineTypes.map((type) => { // type is now guaranteed to be a string
+            if (type === "") {
+              return <option key="all-types" value="">All Types</option>;
+            }
+            return (
+              <option key={type} value={type}>
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </option>
+            );
+          })}
         </select>
       </div>
 

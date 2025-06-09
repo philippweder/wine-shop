@@ -1,4 +1,5 @@
 import asyncio
+import json
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -8,112 +9,120 @@ try:
     from app.config import settings
     from app.database import engine, SessionLocal, Base
     from app.models import Wine
+    from app.schemas import WineCreate # For potential validation if needed
 except ImportError as e:
     print(f"Error importing app modules: {e}")
     print("Please ensure you run this script from the 'backend' directory,")
     print("and that your main application structure (app/config.py, app/database.py, app/models.py) is correct.")
     exit(1)
 
-sample_wines_data = [
-    {
-        "name": "Masi Costasera Amarone Classico DOCG", "type": "Red", "varietal": "Corvina, Rondinella, Molinara",
-        "price": 34.95, "vintage": 2018, "region": "Valpolicella Classico, Veneto", "country": "Italy",
-        "description": "A benchmark Amarone, rich and complex with notes of ripe cherry and cocoa.",
-        "image_url": "/images/red-wine.png"  # Updated
-    },
-    {
-        "name": "Whispering Angel Rosé Côtes de Provence AOP", "type": "Rosé", "varietal": "Grenache, Cinsault, Rolle",
-        "price": 21.95, "vintage": 2023, "region": "Côtes de Provence", "country": "France",
-        "description": "Iconic Provence rosé, elegant, dry with notes of red berries and citrus.",
-        "image_url": "/images/rose-wine.jpg"  # Updated
-    },
-    {
-        "name": "Cloudy Bay Sauvignon Blanc", "type": "White", "varietal": "Sauvignon Blanc",
-        "price": 29.90, "vintage": 2023, "region": "Marlborough", "country": "New Zealand",
-        "description": "Aromatic and vibrant with notes of passionfruit, grapefruit, and a hint of herbaceousness.",
-        "image_url": "/images/white-wine.png"  # Updated
-    },
-    {
-        "name": "Champagne Moët & Chandon Brut Impérial", "type": "Sparkling", "varietal": "Pinot Noir, Chardonnay, Pinot Meunier",
-        "price": 49.90, "vintage": None, "region": "Champagne", "country": "France",
-        "description": "The flagship champagne of Moët & Chandon, known for its bright fruitiness and elegant maturity.",
-        "image_url": "/images/champagne-wine.jpg"  # Updated
-    },
-    {
-        "name": "Antinori Tignanello Toscana IGT", "type": "Red", "varietal": "Sangiovese, Cabernet Sauvignon, Cabernet Franc",
-        "price": 120.00, "vintage": 2020, "region": "Tuscany", "country": "Italy",
-        "description": "One of the original \\'Super Tuscans,\\' complex with red fruit, spice, and oak notes.",
-        "image_url": "/images/red-wine.png"  # Updated
-    },
-    {
-        "name": "Domaine Ott Château de Selle Coeur de Grain Rosé", "type": "Rosé", "varietal": "Grenache, Cinsault, Syrah, Mourvèdre",
-        "price": 45.00, "vintage": 2022, "region": "Côtes de Provence", "country": "France",
-        "description": "A prestigious Provence rosé, refined and aromatic with a long finish.",
-        "image_url": "/images/rose-wine.jpg"  # Updated
-    },
-    {
-        "name": "Penfolds Bin 389 Cabernet Shiraz", "type": "Red", "varietal": "Cabernet Sauvignon, Shiraz",
-        "price": 70.00, "vintage": 2020, "region": "South Australia", "country": "Australia",
-        "description": "Often called \\'Baby Grange,\\' a classic Australian blend known for its richness and structure.",
-        "image_url": "/images/red-wine.png"  # Updated
-    },
-    {
-        "name": "Louis Jadot Pouilly-Fuissé", "type": "White", "varietal": "Chardonnay",
-        "price": 28.50, "vintage": 2021, "region": "Pouilly-Fuissé, Burgundy", "country": "France",
-        "description": "A classic white Burgundy, elegant with notes of white fruits, citrus, and minerality.",
-        "image_url": "/images/white-wine.png"  # Updated
-    },
-    {
-        "name": "Vega Sicilia Valbuena 5°", "type": "Red", "varietal": "Tempranillo, Merlot",
-        "price": 150.00, "vintage": 2018, "region": "Ribera del Duero", "country": "Spain",
-        "description": "A younger expression from Vega Sicilia, powerful yet elegant, with complex aromas.",
-        "image_url": "/images/red-wine.png"  # Updated
-    },
-    {
-        "name": "Graham\\'s 20 Year Old Tawny Port", "type": "Dessert", "varietal": "Touriga Nacional, Touriga Franca, Tinta Roriz",
-        "price": 55.00, "vintage": None, "region": "Douro Valley", "country": "Portugal",
-        "description": "A rich and mellow tawny port with notes of nuts, dried fruit, and spice.",
-        "image_url": "/images/red-wine.png"  # Updated (using red as placeholder for Dessert)
-    }
-]
+# Path to the scraped JSON data
+SCRAPED_WINES_PATH = "../lab/martel_wines.json" # Adjusted path relative to backend directory
 
-async def seed_data():
+async def load_scraped_wines():
+    try:
+        with open(SCRAPED_WINES_PATH, 'r', encoding='utf-8') as f:
+            wines_data = json.load(f)
+        print(f"Successfully loaded {len(wines_data)} wines from {SCRAPED_WINES_PATH}")
+        return wines_data
+    except FileNotFoundError:
+        print(f"Error: {SCRAPED_WINES_PATH} not found.")
+        return []
+    except json.JSONDecodeError:
+        print(f"Error: Could not decode JSON from {SCRAPED_WINES_PATH}.")
+        return []
+    except Exception as e:
+        print(f"An unexpected error occurred while loading scraped wines: {e}")
+        return []
+
+async def seed_data_from_json():
     # Ensure tables are created.
-    # This is usually handled by the main app's lifespan, but good to have if running script standalone.
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all) # Uncommented to drop tables first
+        await conn.run_sync(Base.metadata.drop_all) # Optional: Drop tables first if you want a clean seed
         await conn.run_sync(Base.metadata.create_all)
-        print("Database tables dropped and recreated.")
+        print("Database tables dropped and recreated.") # Updated print message
+
+    scraped_wines = await load_scraped_wines()
+    if not scraped_wines:
+        print("No wines to seed from JSON. Exiting.")
+        return
 
     async with SessionLocal() as db:
+        # Optional: Check if data already exists to prevent duplicates
+        # This simple check assumes if any wine exists, we don't re-seed.
+        # You might want a more sophisticated check based on wine names or product_urls.
         result = await db.execute(select(Wine).limit(1))
         if result.scalars().first():
-            print("Database already contains wine data. Skipping seeding.")
-            return
+            print("Database already contains wine data. To re-seed, clear the 'wines' table first or modify this script.")
+            # If you want to clear and re-seed, you can add:
+            # await db.execute(Wine.__table__.delete())
+            # await db.commit()
+            # print("Cleared existing wine data.")
+            # return # Or continue to seed new data
 
-        print(f"Seeding {len(sample_wines_data)} wines...")
-        for wine_data in sample_wines_data:
-            db_wine = Wine(**wine_data)
-            db.add(db_wine)
+        print(f"Seeding {len(scraped_wines)} wines from JSON...")
+        wines_to_add = []
+        for wine_data in scraped_wines:
+            # Map JSON fields to model fields
+            # The 'brandName' from JSON is mapped to 'producer' in the model
+            # Ensure all required fields in Wine model are present or have defaults
+            wine_entry = {
+                "name": wine_data.get("name"),
+                "type": wine_data.get("type"),
+                "varietal": wine_data.get("varietal"),
+                "vintage": int(wine_data["vintage"]) if wine_data.get("vintage") and wine_data.get("vintage").isdigit() else None,
+                "region": wine_data.get("region"),
+                "country": wine_data.get("country"),
+                "price": float(wine_data["price"]) if wine_data.get("price") is not None else None,
+                "description": wine_data.get("description"),
+                "image_url": wine_data.get("image_url"),
+                "producer": wine_data.get("brandName"), # Mapping brandName to producer
+                "sub_region": wine_data.get("sub_region"),
+                "food_pairing": wine_data.get("food_pairing"),
+                "drinking_window": wine_data.get("drinking_window"),
+                "body_type": wine_data.get("body_type"),
+                "product_url": wine_data.get("product_url"),
+                "size": wine_data.get("size"),
+                "source": wine_data.get("source", "martel.ch") # Default source if not in JSON
+            }
+
+            # Basic validation: ensure essential fields like name and price are present
+            if not wine_entry["name"] or wine_entry["price"] is None:
+                print(f"Skipping wine due to missing name or price: {wine_data.get('name')}")
+                continue
+            
+            # You could use Pydantic model for validation here if desired:
+            # try:
+            #     validated_data = WineCreate(**wine_entry)
+            #     db_wine = Wine(**validated_data.model_dump())
+            # except Exception as ve:
+            #     print(f"Validation error for wine {wine_entry.get('name')}: {ve}")
+            #     continue
+            db_wine = Wine(**wine_entry)
+            wines_to_add.append(db_wine)
         
-        try:
-            await db.commit()
-            print(f"Successfully seeded {len(sample_wines_data)} wines.")
-        except Exception as e:
-            await db.rollback()
-            print(f"Error seeding data: {e}")
-        finally:
-            await db.close()
+        if wines_to_add:
+            db.add_all(wines_to_add)
+            try:
+                await db.commit()
+                print(f"Successfully seeded {len(wines_to_add)} wines from JSON.")
+            except Exception as e:
+                await db.rollback()
+                print(f"Error seeding data from JSON: {e}")
+        else:
+            print("No valid wines found in JSON to seed.")
+        
+        await db.close()
 
 async def main():
-    # The import of settings should have loaded the .env file.
-    # Let's print part of the DB URL to confirm it's loaded (masking credentials).
     db_url_display = settings.DATABASE_URL
     if "@" in db_url_display:
         db_url_display = "postgresql+asyncpg://****:****@" + db_url_display.split('@', 1)[1]
     print(f"Attempting to connect to database: {db_url_display}")
     
-    await seed_data()
+    await seed_data_from_json()
 
 if __name__ == "__main__":
+    # This script should be run from the 'backend' directory.
+    # Example: cd backend && python seed_db.py
     asyncio.run(main())
