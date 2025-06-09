@@ -1,4 +1,6 @@
 # Python / FastAPI specific
+lab/venv/
+lab/__pycache__/
 backend/venv/
 backend/__pycache__/
 *.pyc
