@@ -4,11 +4,18 @@ from sqlalchemy import select
 from contextlib import asynccontextmanager
 from typing import List
 
-from app import models, schemas  # Changed to absolute import from app
+from app import models # No alias needed for models
+# Import wine-specific schemas from the new file
+from app.wine_app_schemas import Wine, WineCreate, WineUpdate
+
 from app.database import engine, get_db  # Changed to absolute import from app
 
 # Add this import for CORS
 from fastapi.middleware.cors import CORSMiddleware
+
+# Import and include the RAG API router
+from app.api.endpoints import rag as rag_router # Corrected import alias
+
 
 # Create tables on startup
 @asynccontextmanager
@@ -50,7 +57,7 @@ async def root():
 
 
 # Example: Get all wines
-@app.get("/wines/", response_model=list[schemas.Wine])
+@app.get("/wines/", response_model=list[Wine]) # Use aliased schema
 async def read_wines(
     skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)
 ):
@@ -60,8 +67,8 @@ async def read_wines(
 
 
 # Example: Create a new wine
-@app.post("/wines/", response_model=schemas.Wine, status_code=201)
-async def create_wine(wine: schemas.WineCreate, db: AsyncSession = Depends(get_db)):
+@app.post("/wines/", response_model=Wine, status_code=201) # Use aliased schema
+async def create_wine(wine: WineCreate, db: AsyncSession = Depends(get_db)): # Use app_schemas
     db_wine = models.Wine(**wine.model_dump())  # Use model_dump() for Pydantic V2
     db.add(db_wine)
     await db.commit()
@@ -72,7 +79,7 @@ async def create_wine(wine: schemas.WineCreate, db: AsyncSession = Depends(get_d
 # Add other CRUD operations for wines (get by ID, update, delete)
 # and for other models as you define them.
 
-@app.get("/wines/{wine_id}", response_model=schemas.Wine)
+@app.get("/wines/{wine_id}", response_model=Wine) # Use aliased schema
 async def read_wine(wine_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(models.Wine).filter(models.Wine.id == wine_id))
     db_wine = result.scalars().first()
@@ -80,8 +87,8 @@ async def read_wine(wine_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Wine not found")
     return db_wine
 
-@app.put("/wines/{wine_id}", response_model=schemas.Wine)
-async def update_wine(wine_id: int, wine: schemas.WineUpdate, db: AsyncSession = Depends(get_db)):
+@app.put("/wines/{wine_id}", response_model=Wine) # Use aliased schema
+async def update_wine(wine_id: int, wine: WineUpdate, db: AsyncSession = Depends(get_db)): # Use app_schemas
     result = await db.execute(select(models.Wine).filter(models.Wine.id == wine_id))
     db_wine = result.scalars().first()
     if db_wine is None:
@@ -95,7 +102,7 @@ async def update_wine(wine_id: int, wine: schemas.WineUpdate, db: AsyncSession =
     await db.refresh(db_wine)
     return db_wine
 
-@app.delete("/wines/{wine_id}", response_model=schemas.Wine)
+@app.delete("/wines/{wine_id}", response_model=Wine) # Use aliased schema
 async def delete_wine(wine_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(models.Wine).filter(models.Wine.id == wine_id))
     db_wine = result.scalars().first()
@@ -110,3 +117,36 @@ async def delete_wine(wine_id: int, db: AsyncSession = Depends(get_db)):
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+
+# Create all database tables if they don't exist
+# This is useful for development but consider Alembic for production migrations
+async def create_tables():
+    async with engine.begin() as conn:
+        # await conn.run_sync(Base.metadata.drop_all) # Optional: drop tables first
+        await conn.run_sync(models.Base.metadata.create_all)
+
+
+@app.on_event("startup")
+async def startup_event():
+    print("Application startup: Creating database tables if they don't exist...")
+    await create_tables()
+    print("Database tables checked/created.")
+    # You could also pre-load the RAG pipeline's vector store here if desired
+    # from app.api.endpoints.rag import rag_pipeline_instance
+    # if not rag_pipeline_instance.vector_store:
+    #     print("Pre-loading FAISS index at startup...")
+    #     rag_pipeline_instance.load_vector_store()
+    #     if rag_pipeline_instance.vector_store:
+    #         print("FAISS index pre-loaded.")
+    #     else:
+    #         print("Warning: FAISS index could not be pre-loaded at startup.")
+
+
+# Include the new RAG router
+app.include_router(rag_router.router, prefix="/api/ai-sommelier", tags=["AI Sommelier"])
+
+
+@app.get("/ping", summary="Health check")
+async def ping():
+    return {"message": "pong"}

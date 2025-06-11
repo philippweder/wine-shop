@@ -50,9 +50,13 @@ uvloop==0.21.0
 watchfiles==1.0.5
 websockets==15.0.1
 
+# RAG and AI related dependencies
 langchain
+langchain-openai
+langchain-huggingface
 openai
-faiss-cpu
+faiss-cpu==1.8.0
 sentence-transformers
 tiktoken
 python-dotenv
+numpy<2.0
